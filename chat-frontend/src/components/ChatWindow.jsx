@@ -7,11 +7,18 @@ import {
   Edit2,
   Trash2,
   MoreVertical,
-  Eye,
+  Smile,
   Trash,
-  Clock,
+  Check,
+  CheckCheck,
+  MessageCircleReply,
+  X,
 } from "lucide-react";
 import LoadingSpinner from "./LoadingSpinner";
+
+import formatLastSeen from "../utils/formatLastSeen.js";
+
+const EMOJI_LIST = ["👍", "❤️", "😂", "😮", "😢", "👏", "🎉", "😎"];
 
 const ChatWindow = () => {
   const {
@@ -27,19 +34,34 @@ const ChatWindow = () => {
     typing,
     stopTyping,
     clearChat,
+    typingUsers,
     reactToMessage,
+    onlineStatus,
   } = useChat();
 
   const [input, setInput] = useState("");
   const [editingMsgId, setEditingMsgId] = useState(null);
   const [editContent, setEditContent] = useState("");
-  const [showActionsFor, setShowActionsFor] = useState(null); // messageId for showing dropdown
-  const [typingUsers, setTypingUsers] = useState([]); // assume ChatContext updates this via socket
+  const [showActionsFor, setShowActionsFor] = useState(null);
+  const [showReactionPickerFor, setShowReactionPickerFor] = useState(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [replyToMessage, setReplyToMessage] = useState(null);
+  const clearButtonRef = useRef();
 
   const bottomRef = useRef();
+  const typingTimeoutRef = useRef(null);
+  const dropdownRefs = useRef({});
+  const reactionPickerRefs = useRef({});
+  const messageRefs = useRef({});
+  const scrollableDivRef = useRef();
 
   const chatId = selectedChat?._id;
   const userMessages = chatId ? messages[chatId] || [] : [];
+  const currentTypingSet = typingUsers[chatId] || new Set();
+  const currentTypingArray = Array.from(currentTypingSet);
+  const other = selectedChat?.isGroupChat
+    ? null
+    : selectedChat?.participants.find((p) => p._id !== user._id);
 
   // Auto-scroll when messages change
   useEffect(() => {
@@ -61,21 +83,26 @@ const ChatWindow = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, userMessages]);
 
-  // Typing indicator emit
+  // Typing indicator emit with debounce for stopTyping
   useEffect(() => {
     if (!chatId) return;
-    if (input) {
+
+    if (input.trim()) {
       typing(chatId);
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        stopTyping(chatId);
+      }, 1000);
     } else {
       stopTyping(chatId);
+      clearTimeout(typingTimeoutRef.current);
     }
-    // Could debounce stopTyping if desired
+
+    return () => clearTimeout(typingTimeoutRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input]);
+  }, [input, chatId]);
 
-  // Click-outside handler to close dropdown
-  const dropdownRefs = useRef({}); // map messageId -> ref
-
+  // Click-outside handlers to close dropdowns and reaction pickers
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (showActionsFor) {
@@ -84,10 +111,23 @@ const ChatWindow = () => {
           setShowActionsFor(null);
         }
       }
+      if (showReactionPickerFor) {
+        const refR = reactionPickerRefs.current[showReactionPickerFor];
+        if (refR && !refR.contains(e.target)) {
+          setShowReactionPickerFor(null);
+        }
+      }
+      if (
+        showClearConfirm &&
+        clearButtonRef.current &&
+        !clearButtonRef.current.contains(e.target)
+      ) {
+        setShowClearConfirm(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showActionsFor]);
+  }, [showActionsFor, showReactionPickerFor, showClearConfirm]);
 
   if (!selectedChat) {
     return (
@@ -104,7 +144,7 @@ const ChatWindow = () => {
   const chatAvatar = selectedChat.isGroupChat
     ? defaultAvatar
     : selectedChat.participants.find((p) => p._id !== user._id)?.profilePic ||
-      defaultAvatar;
+    defaultAvatar;
 
   // Helper: check time window for edit/unsend (6.5 minutes)
   const canUnsend = (msg) => {
@@ -115,43 +155,33 @@ const ChatWindow = () => {
   // Determine which actions are allowed on a message
   const actionsForMessage = (msg) => {
     const isSelf = msg.sender._id === user._id;
-    const canEdit = isSelf && canUnsend(msg); // allow edit within window
+    const canEdit = isSelf && canUnsend(msg);
     const canUnsendMsg = isSelf && canUnsend(msg);
-    const canDelete = true; // Delete for Me always allowed
+    const canDelete = true;
     return { canEdit, canUnsendMsg, canDelete };
   };
 
-  // Render read receipts
-  const renderReadReceipt = (msg) => {
-    if (!selectedChat.isGroupChat) {
-      // private: if msg.sender is self and readBy includes other user
-      if (msg.sender._id === user._id) {
-        const otherId = selectedChat.participants.find(
-          (p) => p._id !== user._id
-        )?._id;
-        if (msg.readBy && msg.readBy.includes(otherId)) {
-          return <span className="text-xs text-blue-500">Seen</span>;
-        }
-      }
-    } else {
-      // group: show count of others who have read
-      if (msg.sender._id === user._id) {
-        const readers = (msg.readBy || []).filter((uid) => uid !== user._id);
-        if (readers.length > 0) {
-          return (
-            <span className="text-xs text-gray-500">{readers.length} seen</span>
-          );
-        }
-      }
-    }
-    return null;
+  const renderTickIcon = (msg) => {
+    if (!selectedChat || selectedChat.isGroupChat || msg.sender._id !== user._id)
+      return null;
+
+    const otherId = selectedChat.participants.find(p => p._id !== user._id)?._id;
+    const seen = msg.readBy?.includes(otherId);
+
+    return (
+      <span className="absolute bottom-2 right-1">
+        {seen ? (
+          <CheckCheck size={16} className="text-blue-500" />
+        ) : (
+          <Check size={16} className="text-gray-500" />
+        )}
+      </span>
+    );
   };
 
-  // Input submit handler (send or confirm edit)
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editingMsgId) {
-      // Confirm edit
       if (editContent.trim()) {
         editMessage(editingMsgId, editContent.trim());
       }
@@ -159,45 +189,97 @@ const ChatWindow = () => {
       setEditContent("");
     } else {
       if (input.trim()) {
-        sendMessage(input.trim());
+        sendMessage(input.trim(), replyToMessage?._id);
       }
       setInput("");
+      setReplyToMessage(null);
     }
+  };
+
+  // Helper function to check if an element is near the bottom
+  const isMessageNearBottom = (element) => {
+    if (!element || !scrollableDivRef.current) return false;
+    const scrollableDiv = scrollableDivRef.current;
+    const elementRect = element.getBoundingClientRect();
+    const scrollableRect = scrollableDiv.getBoundingClientRect();
+    // If the message is within the bottom 25% of the scrollable area
+    return elementRect.bottom > (scrollableRect.bottom - scrollableRect.height * 0.25);
   };
 
   return (
     <div className="flex-1 flex flex-col h-full bg-base-100 border-l">
-      {/* Header with Clear Chat and typing indicator */}
+      {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-2">
         <div className="flex items-center">
           <img src={chatAvatar} alt="Chat" className="w-10 h-10 rounded-full" />
-          <h2 className="ml-3 text-xl font-semibold">{chatName}</h2>
+          <div className="flex flex-col ml-3">
+            <h2 className="ml-3 text-xl font-semibold">{chatName}</h2>
+            <div className="text-sm text-gray-500 ml-3">
+              {onlineStatus[other?._id] === true
+                ? "Online"
+                : onlineStatus[other?._id]
+                  ? `Last seen ${formatLastSeen(onlineStatus[other?._id])}`
+                  : "Offline"}
+            </div>
+          </div>
         </div>
         <div className="flex items-center space-x-2">
-          {typingUsers.length > 0 && (
+          {currentTypingArray.length > 0 && (
             <span className="text-sm italic text-gray-500">
-              {/* You may map IDs to names if you have user list in context */}
-              {typingUsers.map((id) => "Someone").join(", ")} typing...
+              {selectedChat.isGroupChat
+                ? currentTypingArray
+                  .map((id) => {
+                    const part = selectedChat.participants.find(
+                      (p) => p._id === id
+                    );
+                    return part ? part.name : "Someone";
+                  })
+                  .join(", ") + " typing..."
+                : "typing..."}
             </span>
           )}
-          <button
-            className="btn btn-ghost btn-sm"
-            onClick={() => clearChat(chatId)}
-          >
-            Clear Chat
-          </button>
+          <div className="relative" ref={clearButtonRef}>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => setShowClearConfirm((prev) => !prev)}
+            >
+              Clear Chat
+            </button>
+            {showClearConfirm && (
+              <div className="absolute right-0 mt-2 w-48 bg-base-100 border border-gray-300 rounded-lg shadow-lg z-50 p-3 text-sm">
+                <p className="mb-2 text-white">Clear all messages?</p>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => setShowClearConfirm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn btn-sm btn-error"
+                    onClick={() => {
+                      clearChat(chatId);
+                      setShowClearConfirm(false);
+                    }}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={scrollableDivRef}>
         {loadingMessages && <LoadingSpinner />}
         {!loadingMessages &&
-          userMessages.map((msg) => {
+          userMessages.map((msg, index) => {
             const isSelf = msg.sender._id === user._id;
             const { canEdit, canUnsendMsg, canDelete } = actionsForMessage(msg);
+            const isLastMessage = index === userMessages.length - 1;
 
-            // Prepare a ref container for this message's dropdown
             const containerRef = (el) => {
               if (el) {
                 dropdownRefs.current[msg._id] = el;
@@ -205,11 +287,31 @@ const ChatWindow = () => {
                 delete dropdownRefs.current[msg._id];
               }
             };
+            const pickerRef = (el) => {
+              if (el) {
+                reactionPickerRefs.current[msg._id] = el;
+              } else {
+                delete reactionPickerRefs.current[msg._id];
+              }
+            };
+            const messageRef = (el) => {
+              messageRefs.current[msg._id] = el;
+              if (isLastMessage) bottomRef.current = el;
+            };
+
+            const isBottomMessage = isMessageNearBottom(messageRefs.current[msg._id]);
+
+            // Correctly count reactions from an array
+            const reactionsCount = msg.reactions?.reduce((acc, reaction) => {
+              acc[reaction.emoji] = (acc[reaction.emoji] || 0) + 1;
+              return acc;
+            }, {});
 
             return (
               <div
                 key={msg._id}
                 className={`chat ${isSelf ? "chat-end" : "chat-start"}`}
+                ref={messageRef}
               >
                 <div className="chat-image">
                   <img
@@ -222,128 +324,200 @@ const ChatWindow = () => {
                     className="w-8 h-8 rounded-full"
                   />
                 </div>
-                <div className="chat-content flex flex-col relative group">
-                  {/* Header: name + timestamp */}
-                  <div className="chat-header flex items-center space-x-2">
-                    <span className="font-medium">{msg.sender.name}</span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                      {msg.isEdited && " (edited)"}
-                    </span>
-                  </div>
+                <div className="chat-content flex flex-col relative group transition-all duration-2000">
+                  {/* Pinned Reply Message Display */}
+                  {msg.replyTo && (
+                    <div
+                      className={`p-2 rounded-t-xl ${isSelf ? "bg-base-300" : "bg-base-200"
+                        } border-l-4 border-blue-500 text-sm italic`}
+                    >
+                      <p className="font-semibold text-blue-400">
+                        Replying to {msg.replyTo.sender.name}
+                      </p>
+                      <p className="text-gray-400 truncate">
+                        {msg.replyTo.content}
+                      </p>
+                    </div>
+                  )}
 
-                  {/* Message bubble or editing input */}
-                  <div className="chat-bubble relative">
-                    {editingMsgId === msg._id ? (
-                      <input
-                        type="text"
-                        className="input input-bordered w-full"
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                      />
-                    ) : msg.content ? (
-                      msg.content
-                    ) : (
-                      // In case content is empty (maybe unsent?), you could show placeholder
-                      <i className="text-gray-500 italic">Message deleted</i>
+                  {/* Message bubble */}
+                  <div
+                    className={`chat-bubble relative ${msg.replyTo ? "rounded-t-none" : ""
+                      } inline-block max-w-sm sm:max-w-md lg:max-w-lg`}
+                  >
+                    <div className="flex flex-col gap-1">
+                      {/* Message content */}
+                      <div>
+                        {editingMsgId === msg._id ? (
+                          <input
+                            type="text"
+                            className="input input-bordered w-full"
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                          />
+                        ) : msg.content ? (
+                          msg.content
+                        ) : (
+                          <i className="text-gray-500 italic">
+                            Message deleted
+                          </i>
+                        )}
+                      </div>
+                      {/* Timestamp and seen ticks */}
+                      <div
+                        className={`chat-footer text-xs flex ${isSelf ? "justify-end" : "justify-start"
+                          } items-center space-x-1 mt-1`}
+                      >
+                        <time className="text-gray-500">
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                          {msg.isEdited && " (edited)"}
+                        </time>
+                        {renderTickIcon(msg)}
+                      </div>
+                    </div>
+
+                    {/* Action buttons on hover */}
+                    <div
+                      className={`absolute ${isSelf ? "-left-20" : "-right-20"
+                        } top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-2000 flex space-x-1`}
+                    >
+                      <div className="relative">
+                        <button
+                          className="p-1 hover:bg-gray-700 rounded tooltip"
+                          data-tip="Reply"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setReplyToMessage(msg);
+                            setShowActionsFor(null);
+                            setShowReactionPickerFor(null);
+                          }}
+                        >
+                          <MessageCircleReply size={16} />
+                        </button>
+                      </div>
+                      <div className="relative">
+                        <button
+                          className="p-1 hover:bg-gray-700 rounded tooltip"
+                          data-tip="React"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowReactionPickerFor((prev) =>
+                              prev === msg._id ? null : msg._id
+                            );
+                            setShowActionsFor(null);
+                          }}
+                        >
+                          <Smile size={16} />
+                        </button>
+                      </div>
+                      <div className="relative">
+                        <button
+                          className="p-1 hover:bg-gray-700 rounded tooltip"
+                          data-tip="More"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowActionsFor((prev) =>
+                              prev === msg._id ? null : msg._id
+                            );
+                            setShowReactionPickerFor(null);
+                          }}
+                        >
+                          <MoreVertical size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Three-dot dropdown */}
+                    {showActionsFor === msg._id && (
+                      <div
+                        className={`absolute w-40 bg-base-200 rounded shadow-md z-50 text-sm text-gray-300 ${isSelf ? "right-0" : "left-0"
+                          } ${isBottomMessage ? "bottom-full mb-2" : "top-full mt-2"}`}
+                        ref={containerRef}
+                      >
+                        <ul className="divide-y divide-gray-700">
+                          {canEdit && (
+                            <li
+                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center"
+                              onClick={() => {
+                                setEditingMsgId(msg._id);
+                                setEditContent(msg.content);
+                                setShowActionsFor(null);
+                              }}
+                            >
+                              <Edit2 size={16} className="mr-2" />
+                              Edit
+                            </li>
+                          )}
+                          {canUnsendMsg && (
+                            <li
+                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center"
+                              onClick={() => {
+                                unsendMessage(msg._id);
+                                setShowActionsFor(null);
+                              }}
+                            >
+                              <Trash2 size={16} className="mr-2 text-red-400" />
+                              Unsend
+                            </li>
+                          )}
+                          {canDelete && (
+                            <li
+                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer flex items-center"
+                              onClick={() => {
+                                deleteForMe(msg._id);
+                                setShowActionsFor(null);
+                              }}
+                            >
+                              <Trash size={16} className="mr-2 text-red-400" />
+                              Delete for Me
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Reaction picker popup */}
+                    {showReactionPickerFor === msg._id && (
+                      <div
+                        className={`absolute z-50 bg-base-200 rounded shadow-md p-2 ${isSelf ? "right-0" : "left-0"
+                          } ${isBottomMessage ? "bottom-full mb-2" : "top-full mt-2"}`}
+                        ref={pickerRef}
+                      >
+                        <div className="flex space-x-1">
+                          {EMOJI_LIST.map((emoji) => (
+                            <button
+                              key={emoji}
+                              className="text-xl p-1 hover:bg-gray-700 rounded"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                reactToMessage(msg._id, emoji);
+                                setShowReactionPickerFor(null);
+                              }}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Reactions display */}
+                    {msg.reactions && msg.reactions.length > 0 && (
+                      <div
+                        className={`absolute -bottom-2 flex items-center gap-1 bg-base-300 rounded-full px-1 py-0.5 text-xs border border-gray-600 shadow ${isSelf ? "left-0 transform -translate-x-1/2" : "right-0 transform translate-x-1/2"}`}
+                      >
+                        {Object.entries(reactionsCount).map(([emoji, count]) => (
+                          <span key={emoji} className="flex items-center gap-0.5">
+                            <span className="text-sm">{emoji}</span>
+                            <span className="text-gray-400">{count}</span>
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
-
-                  {/* Three-dot button (visible on hover) and dropdown */}
-                  {editingMsgId !== msg._id && (
-                    <div
-                      className="absolute top-0 right-0 p-1 invisible group-hover:visible"
-                      ref={containerRef}
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowActionsFor((prev) =>
-                            prev === msg._id ? null : msg._id
-                          );
-                        }}
-                      >
-                        <MoreVertical size={16} />
-                      </button>
-                      {showActionsFor === msg._id && (
-                        <div className="absolute right-0 mt-6 w-40 bg-white rounded shadow-md z-50 text-sm text-gray-800">
-                          <ul className="divide-y divide-gray-200">
-                            {canEdit && (
-                              <li
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
-                                onClick={() => {
-                                  setEditingMsgId(msg._id);
-                                  setEditContent(msg.content);
-                                  setShowActionsFor(null);
-                                }}
-                              >
-                                <Edit2 size={16} className="mr-2" />
-                                Edit
-                              </li>
-                            )}
-                            {/* You can add Reply, Forward, React here similarly */}
-                            {canUnsendMsg && (
-                              <li
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
-                                onClick={() => {
-                                  unsendMessage(msg._id);
-                                  setShowActionsFor(null);
-                                }}
-                              >
-                                <Trash2 size={16} className="mr-2 text-red-600" />
-                                Unsend
-                              </li>
-                            )}
-                            {canDelete && (
-                              <li
-                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
-                                onClick={() => {
-                                  deleteForMe(msg._id);
-                                  setShowActionsFor(null);
-                                }}
-                              >
-                                <Trash size={16} className="mr-2 text-red-600" />
-                                Delete for Me
-                              </li>
-                            )}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* If editing: Save / Cancel */}
-                  {editingMsgId === msg._id && (
-                    <div className="flex space-x-2 mt-1">
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => {
-                          if (editContent.trim()) {
-                            editMessage(msg._id, editContent.trim());
-                          }
-                          setEditingMsgId(null);
-                          setEditContent("");
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => {
-                          setEditingMsgId(null);
-                          setEditContent("");
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Read receipt */}
-                  <div className="mt-1">{renderReadReceipt(msg)}</div>
                 </div>
               </div>
             );
@@ -351,12 +525,35 @@ const ChatWindow = () => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Message input */}
-      <div className="p-4 border-t">
+      {/* Message input area */}
+      <div className="p-4 border-t border-gray-700 flex flex-col">
+        {/* Pinned reply message display */}
+        {replyToMessage && (
+          <div className="p-2 -mt-4 bg-base-200 border-l-4 border-blue-500 rounded-t-lg flex items-center justify-between">
+            <div className="flex-1 overflow-hidden">
+              <p className="text-sm font-semibold text-blue-400">
+                Replying to {replyToMessage.sender.name}
+              </p>
+              <p className="text-sm text-gray-400 truncate">
+                {replyToMessage.content}
+              </p>
+            </div>
+            <button
+              className="btn btn-ghost btn-sm p-1 text-gray-400 hover:text-white"
+              onClick={() => setReplyToMessage(null)}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
         <form className="flex gap-2" onSubmit={handleSubmit}>
           <input
             type="text"
-            className="input input-bordered w-full"
+            className={`input input-bordered w-full ${replyToMessage ? "rounded-t-none" : ""
+              }`}
+            autoComplete="off"
+            name="chatMessage"
             placeholder={editingMsgId ? "Edit message..." : "Type a message..."}
             value={editingMsgId ? editContent : input}
             onChange={(e) => {

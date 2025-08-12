@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "../utils/axiosConfig";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 
@@ -14,10 +15,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("/auth/me"); // your endpoint to get current user
+        const res = await axios.get("/auth/me");
         setUser(res.data);
       } catch (err) {
         setUser(null);
+        toast.error(err.response?.data?.message || "Failed to fetch user");
       } finally {
         setLoadingAuth(false);
       }
@@ -26,23 +28,34 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    // credentials: { emailOrUsername, password }
-    const res = await axios.post("/auth/login", credentials);
-    // Backend sets HTTP-only cookie
-    setUser(res.data); // adjust based on response shape
-    return res;
+    try {
+      const res = await axios.post("/auth/login", credentials);
+      setUser(res.data);
+      return res;
+    } catch (error) {
+      // The server's error message is inside error.response.data.message
+      // If the server doesn't provide a message, use a default one
+      throw new Error(error.response.data.message || "Login failed");
+    }
   };
 
   const register = async (data) => {
-    // data: { name, username, email, password }
-    const res = await axios.post("/auth/register", data);
-    setUser(res.data);
-    return res;
+    try {
+      const res = await axios.post("/auth/register", data);
+      setUser(res.data);
+      return res;
+    } catch (error) {
+      throw new Error(error.response.data.message || "Registration failed");
+    }
   };
 
   const logout = async () => {
-    await axios.post("/auth/logout");
-    setUser(null);
+    try {
+      await axios.post("/auth/logout");
+      setUser(null);
+    } catch (error) {
+      throw new Error(error.response.data.message || "Logout failed");
+    }
   };
 
   return (

@@ -2,34 +2,43 @@
 import { useChat } from "../context/ChatContext";
 import { useState } from "react";
 import defaultAvatar from "../assets/defaultpfp.jpg";
+import { Link } from "react-router-dom";
 
 const ChatListSidebar = () => {
-  const { chats, loadingChats, selectChat, selectedChat } = useChat();
-  const [search, setSearch] = useState(""); 
+  const { chats, loadingChats, selectChat, selectedChat, user } = useChat();
+  const [search, setSearch] = useState("");
 
-  // Helper to get current user ID from context user
-  const { user } = useChat();
-  const chatParticipantsSelfId = () => user?._id;
+  // Get other participant in private chat
+  const getOtherParticipant = (chat) => {
+    return chat.participants.find(p => p._id !== user._id);
+  };
 
-  // Filter chats by participant name or group name
+  // Search filtering
   const filteredChats = chats.filter(chat => {
     if (chat.isGroupChat) {
       return chat.name.toLowerCase().includes(search.toLowerCase());
     } else {
-      // find the other participant
-      const other = chat.participants.find(p => p._id !== chatParticipantsSelfId());
+      const other = getOtherParticipant(chat);
       return other?.name.toLowerCase().includes(search.toLowerCase());
     }
   });
 
-  
+  // Return safe latest message (not deletedForMe or cleared)
+  const getSafeLatestMessage = (chat) => {
+    const msg = chat.latestMessage;
+    if (!msg) return null;
 
+    const isDeleted = msg.deletedFor?.includes(user._id);
+    const clearedAt = chat.clearedAt?.[user._id];
+    const isCleared = clearedAt && new Date(msg.createdAt) <= new Date(clearedAt);
+
+    return isDeleted || isCleared ? null : msg;
+  };
+
+  // Chat display name
   const renderChatName = (chat) => {
-    if (chat.isGroupChat) {
-      return chat.name;
-    }
-    // Private chat: show other user's name
-    const other = chat.participants.find(p => p._id !== user._id);
+    if (chat.isGroupChat) return chat.name;
+    const other = getOtherParticipant(chat);
     return other?.name || "Unknown";
   };
 
@@ -40,42 +49,55 @@ const ChatListSidebar = () => {
           type="text"
           placeholder="Search chats"
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
           className="input input-bordered w-full"
         />
       </div>
       <div className="flex-1 overflow-y-auto">
         {loadingChats && <div className="p-4 text-center">Loading chats...</div>}
+
         {!loadingChats && filteredChats.map(chat => {
           const isSelected = selectedChat?._id === chat._id;
-          // For display avatar: for group, maybe a group icon; for private, other user's avatar
-          let avatarUrl = defaultAvatar;
-          if (!chat.isGroupChat) {
-            const other = chat.participants.find(p => p._id !== user._id);
-            avatarUrl = other?.profilePic || defaultAvatar;
-          }
+          const avatarUrl = chat.isGroupChat
+            ? defaultAvatar
+            : getOtherParticipant(chat)?.profilePic || defaultAvatar;
+
+          const safeLatest = getSafeLatestMessage(chat);
+
           return (
             <div
               key={chat._id}
-              className={`flex items-center p-2 cursor-pointer hover:bg-base-300
-                ${isSelected ? "bg-base-300" : ""}`}
+              className={`flex items-center p-2 cursor-pointer hover:bg-base-300 ${isSelected ? "bg-base-300" : ""}`}
               onClick={() => selectChat(chat)}
             >
               <img src={avatarUrl} alt="avatar" className="w-10 h-10 rounded-full" />
               <div className="ml-3 flex-1">
                 <div className="font-medium">{renderChatName(chat)}</div>
-                {chat.latestMessage && (
-                  <div className="text-sm text-gray-500 truncate">
-                    {chat.latestMessage.sender.name}: {chat.latestMessage.content.slice(0, 30)}
-                    {chat.latestMessage.content.length > 30 ? "..." : ""}
-                  </div>
-                )}
+                <div className="flex flex justify-between">
+                  {safeLatest && (
+                    <div className="text-sm text-gray-500 truncate">
+                      {safeLatest.sender.name}: {safeLatest.content.slice(0, 30)}
+                      {safeLatest.content.length > 30 ? "..." : ""}
+                    </div>
+                  )}
+                  {chat.unreadCount > 0 && (
+                    <span className="badge badge-sm badge-primary ml-2">
+                      {chat.unreadCount}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           );
         })}
+
         {!loadingChats && filteredChats.length === 0 && (
-          <div className="p-4 text-center text-gray-500">No chats found</div>
+          <div className="p-4 text-center text-gray-500">
+            No friends found, add friends from{" "}
+            <Link to="/friends" className="text-blue-500 underline hover:text-blue-700">
+              Friends Page
+            </Link>
+          </div>
         )}
       </div>
     </div>

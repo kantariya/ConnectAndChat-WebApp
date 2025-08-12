@@ -1,10 +1,13 @@
 // src/components/Navbar.jsx
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { MessagesSquare, UsersRound, Handshake } from 'lucide-react';
+import { MessagesSquare, UsersRound, BotMessageSquare } from 'lucide-react';
 import defaultAvatar from "../assets/defaultpfp.jpg";
+import { toast } from 'react-toastify';
+
 
 const Navbar = () => {
+    
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -14,7 +17,8 @@ const Navbar = () => {
             await logout();
             navigate("/login");
         } catch (err) {
-            console.error("Logout failed", err);
+            toast.error(err.message);
+            console.error("Logout failed", err.message);
         }
     };
 
@@ -22,14 +26,16 @@ const Navbar = () => {
 
     return (
         <div className="navbar bg-black shadow-sm px-4">
-            <div className="flex-1 navbar-start">
+            {/* The logo container now has no flex class */}
+            <div className="navbar-start">
                 <button
-                  className="btn btn-ghost text-xl text-primary"
-                  onClick={() => navigate("/")}
+                    className="btn btn-ghost text-xl text-primary"
+                    onClick={() => navigate("/")}
                 >
-                  Connect<span className="text-white">&</span>Chat
+                    <img className="h-20 w-20" src="/ConnectNChatIcon.svg" alt="App Logo" />
                 </button>
             </div>
+            {/* This center div is correctly positioned */}
             <div className="tabs tabs-boxed navbar-center gap-0.5">
                 <input
                     type="radio"
@@ -41,11 +47,11 @@ const Navbar = () => {
                 />
                 <label
                     htmlFor="tab-dashboard"
-                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500 
-                      peer-checked/tab-dashboard:border-2 peer-checked/tab-dashboard:border-white 
-                      peer-checked/tab-dashboard:text-white peer-checked/tab-dashboard:bg-base-100"
+                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500
+                   peer-checked/tab-dashboard:border-2 peer-checked/tab-dashboard:border-white
+                   peer-checked/tab-dashboard:text-white peer-checked/tab-dashboard:bg-base-100"
                 >
-                    <MessagesSquare />
+                    <UsersRound />
                 </label>
 
                 <input
@@ -58,30 +64,31 @@ const Navbar = () => {
                 />
                 <label
                     htmlFor="tab-friends"
-                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500 
-                      peer-checked/tab-friends:border-2 peer-checked/tab-friends:border-white 
-                      peer-checked/tab-friends:text-white peer-checked/tab-friends:bg-base-100"
+                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500
+                   peer-checked/tab-friends:border-2 peer-checked/tab-friends:border-white
+                   peer-checked/tab-friends:text-white peer-checked/tab-friends:bg-base-100"
                 >
-                    <UsersRound />
+                    <MessagesSquare />
                 </label>
 
                 <input
                     type="radio"
                     name="my_tabs"
-                    id="tab-connect"
-                    className="hidden peer/tab-connect"
-                    checked={currentPath === "/connect"}
-                    onChange={() => navigate("/connect")}
+                    id="tab-chatbot"
+                    className="hidden peer/tab-chatbot"
+                    checked={currentPath === "/chatbot"}
+                    onChange={() => navigate("/chatbot")}
                 />
                 <label
-                    htmlFor="tab-connect"
-                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500 
-                      peer-checked/tab-connect:border-2 peer-checked/tab-connect:border-white 
-                      peer-checked/tab-connect:text-white peer-checked/tab-connect:bg-base-100"
+                    htmlFor="tab-chatbot"
+                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500
+                   peer-checked/tab-chatbot:border-2 peer-checked/tab-chatbot:border-white
+                   peer-checked/tab-chatbot:text-white peer-checked/tab-chatbot:bg-base-100"
                 >
-                    <Handshake />
+                    <BotMessageSquare />
                 </label>
             </div>
+            {/* This end div is now balanced by the start div */}
             <div className="flex gap-2 navbar-end">
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} className="btn btn-ghost btn-circle avatar">

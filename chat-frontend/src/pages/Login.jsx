@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import AuthLayout from "../layouts/AuthLayout";
 import loginSide from "../assets/registerside.jpg";
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const { login } = useAuth();
@@ -25,7 +25,8 @@ const Login = () => {
       await login(formData);
       navigate("/");
     } catch (error) {
-      console.log("Login failed", error);
+      console.log("Login failed", error.message);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

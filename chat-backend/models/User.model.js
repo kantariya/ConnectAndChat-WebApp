@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,14 +25,24 @@ const userSchema = new mongoose.Schema(
 
     password: { type: String, required: true },
 
-    profilePic: { type: String, default: "" }, 
+    profilePic: { type: String, default: "" },
+
+    profilePicId: { type: String, default: '' },
 
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     isOnline: { type: Boolean, default: false },
+
+    lastSeen: { type: Date, default: null },
   },
   { timestamps: true }
 );
+
+userSchema.index({ friends: 1 });
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 export default User;

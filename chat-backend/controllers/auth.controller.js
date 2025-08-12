@@ -1,19 +1,22 @@
 import User from '../models/User.model.js';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils/generateToken.js';
+import asyncHandler from 'express-async-handler';
 
-export const registerUser = async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
   const { name, username, email, password } = req.body;
 
-  if(!username || !email ) 
-    res.status(400).json({ message:"Username and Email are required"});
-  
-  if(!password) 
-    res.status(400).json({ message:"Password is required"});
+  if (!username || !email) {
+    return res.status(400).json({ message: "Username and Email are required" });
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
 
   const userExists = await User.findOne({ $or: [{ email }, { username }] });
   if (userExists) {
-    return res.status(400).json({ message: 'User already exists' });
+    return res.status(400).json({ message: "User already exists" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,7 +35,7 @@ export const registerUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(201).json({
@@ -42,18 +45,20 @@ export const registerUser = async (req, res) => {
       email: user.email,
     });
   } else {
-    res.status(400).json({ message: 'Invalid user data' });
+    return res.status(400).json({ message: "Invalid user data" });
   }
-};
+});
 
-export const loginUser = async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
   const { emailOrUsername, password } = req.body;
 
-  if(!emailOrUsername ) 
-    res.status(400).json({ message:"Username Or Email required"});
-  
-  if(!password) 
-    res.status(400).json({ message:"Password is required"});
+  if (!emailOrUsername) {
+    return res.status(400).json({ message: "Username Or Email required" });
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
 
   const user = await User.findOne({
     $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
@@ -76,16 +81,21 @@ export const loginUser = async (req, res) => {
       email: user.email,
     });
   } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+    return res.status(401).json({ message: "Invalid credentials" });
   }
-};
+});
 
-export const logoutUser = async (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-  });
+export const logoutUser = asyncHandler(async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
 
-  res.status(200).json({ message: 'Logged out successfully' });
-};
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+      return res.status(400).json({ message: "Logout Failed" });
+  }
+
+});

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import AuthLayout from "../layouts/AuthLayout";
 import registerSide from "../assets/registerside.jpg";
+import { toast } from 'react-toastify';
 
 const RegisterPage = () => {
   const { register } = useAuth();
@@ -27,7 +27,7 @@ const RegisterPage = () => {
       await register(formData);
       navigate("/");
     } catch (err) {
-      // handle error (e.g., toast)
+        toast.error(err.message);
     } finally {
       setLoading(false);
     }

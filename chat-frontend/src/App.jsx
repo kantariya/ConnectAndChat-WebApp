@@ -4,11 +4,13 @@ import Dashboard from "./pages/Dashboard";
 import FriendsPage from "./pages/FriendsPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-// import ConnectPage from "./pages/ConnectPage";
-// import ProfilePage from "./pages/ProfilePage";   
+import SettingsPage from "./pages/Settings";
+import ProfilePage from "./pages/ProfilePage";   
 import MainLayout from "./layouts/MainLayout";
 import ProtectLayout from "./layouts/ProtectLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import ChatBotPage from "./pages/ChatBotPage";
+
 
 const App = () => {
   return (
@@ -24,8 +26,9 @@ const App = () => {
         <Route element={<ProtectLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/friends" element={<FriendsPage />} />
-          {/* <Route path="/connect" element={<ConnectPage />} /> */}
-          {/* <Route path="/profile" element={<ProfilePage />} /> */}
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/chatbot" element={<ChatBotPage/>} />
           {/* add other protected routes */}
         </Route>
       </Route>
