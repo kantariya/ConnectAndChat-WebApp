@@ -28,6 +28,8 @@ const server = http.createServer(app);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.set('trust proxy', 1);
+
 // CORS settings (only for development)
 if (process.env.NODE_ENV === "development") {
   app.use(

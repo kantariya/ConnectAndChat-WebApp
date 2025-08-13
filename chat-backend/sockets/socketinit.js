@@ -412,7 +412,10 @@ export function initSocket(io) {
                     });
                 });
             }
-            console.log(`Socket disconnected: ${socket.id}`);
+
+            if (process.env.NODE_ENV !== "production") {
+                console.log(`Socket disconnected: ${socket.id}`);
+            }
         });
 
     });
