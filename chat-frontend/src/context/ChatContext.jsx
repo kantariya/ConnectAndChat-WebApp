@@ -44,7 +44,6 @@ export const ChatProvider = ({ children }) => {
       chats.forEach(chat => {
         if (!joinedChatIds.current.has(chat._id)) {
           socketRef.current.emit("joinChat", chat._id);
-          console.log(`✅ Joined chat ${chat._id} for user ${user._id}`);
           joinedChatIds.current.add(chat._id); //  only join once
         }
       });
@@ -302,7 +301,7 @@ export const ChatProvider = ({ children }) => {
     });
 
     //  ─── listen for our new `chatUpdated` broadcasts ───
-    socketRef.current.on("chatUpdated", ({ chatId, latestMessage, lastRead }) => {
+    socket.on("chatUpdated", ({ chatId, latestMessage, lastRead }) => {
       const openChatId = selectedChatRef.current?._id;
       const currentUserId = user._id;
 
@@ -310,18 +309,26 @@ export const ChatProvider = ({ children }) => {
         prev.map(c => {
           if (c._id !== chatId) return c;
 
+          // calculate new unreadCount
+          let unreadCount = c.unreadCount || 0;
           const lastReadTime = lastRead?.[currentUserId] ? new Date(lastRead[currentUserId]) : null;
-          let unreadCount = lastReadTime
-            ? c.messages.filter(msg => new Date(msg.createdAt) > lastReadTime).length
-            : c.messages.length;
+          const msgTime = new Date(latestMessage?.createdAt);
 
-          if (openChatId === chatId) unreadCount = 0;
+          if (openChatId === chatId) {
+            // I'm already in the chat => 0 unread
+            unreadCount = 0;
+          } else if (!lastReadTime || msgTime > lastReadTime) {
+            unreadCount = (c.unreadCount || 0) + 1;
+          }
 
-          return { ...c, latestMessage, unreadCount };
+          return {
+            ...c,
+            latestMessage,
+            unreadCount,
+          };
         })
       );
     });
-
 
 
 
