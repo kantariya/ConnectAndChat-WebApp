@@ -6,7 +6,7 @@ let socket;
 export function getConnectSocket() {
   if (!socket) {
     const socketURL =
-      import.meta.env.MODE === "production"
+      import.meta.env.NODE_ENV === "production"
         ? "/"
         : import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
