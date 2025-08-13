@@ -324,7 +324,7 @@ const ChatWindow = () => {
                     className="w-8 h-8 rounded-full"
                   />
                 </div>
-                <div className="chat-content flex flex-col relative group transition-all duration-2000">
+                <div className="chat-content flex flex-col relative group transition-all duration-1000">
                   {/* Pinned Reply Message Display */}
                   {msg.replyTo && (
                     <div
@@ -382,7 +382,7 @@ const ChatWindow = () => {
                     {/* Action buttons on hover */}
                     <div
                       className={`absolute ${isSelf ? "-left-20" : "-right-20"
-                        } top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-2000 flex space-x-1`}
+                        } top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 flex space-x-1`}
                     >
                       <div className="relative">
                         <button

@@ -60,7 +60,7 @@ export const ChatProvider = ({ children }) => {
     }
 
 
-    const socketURL = import.meta.env.PROD
+    const socketURL = import.meta.env.NODE_ENV === "production"
       ? "/" // production = same origin
       : "http://localhost:5000"; // development backend
 
