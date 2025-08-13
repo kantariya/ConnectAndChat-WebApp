@@ -301,7 +301,7 @@ export const ChatProvider = ({ children }) => {
     });
 
     //  ─── listen for our new `chatUpdated` broadcasts ───
-    socketRef.current.on("chatUpdated", ({ chatId, latestMessage, lastRead }) => {
+    socket.on("chatUpdated", ({ chatId, latestMessage, lastRead }) => {
       const openChatId = selectedChatRef.current?._id;
       const currentUserId = user._id;
 

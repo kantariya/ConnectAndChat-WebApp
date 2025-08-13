@@ -1,9 +1,9 @@
 // Disable certain console methods in production
 if (import.meta.env.MODE === "production") {
-  console.log = () => {};
-  console.debug = () => {};
-  console.warn = () => {};
-  console.error = () => {};
+  // console.log = () => {};
+  // console.debug = () => {};
+  // console.warn = () => {};
+  // console.error = () => {};
 }
 
 
