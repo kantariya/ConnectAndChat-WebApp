@@ -1,4 +1,4 @@
-import FriendRequest from '../models/friendRequest.model.js';
+import FriendRequest from '../models/FriendRequest.model.js';
 import User from '../models/User.model.js';
 import asyncHandler from 'express-async-handler';
 
