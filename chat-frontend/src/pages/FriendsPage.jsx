@@ -5,7 +5,7 @@ const FriendsPage = () => {
   return (
     <div className="flex h-[calc(100vh-4rem)]">
       <FriendSidebar />
-      <ChatWindow  className="hidden md:block"/>
+      <ChatWindow/>
     </div>
   );
 };

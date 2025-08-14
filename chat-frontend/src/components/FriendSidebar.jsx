@@ -122,7 +122,7 @@ const FriendSidebar = () => {
           return (
             <div
               key={user._id}
-              className="flex items-center justify-between p-2 bg-[#191e24] rounded cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+              className="flex flex-col gap-2 md:flex-row md:gap-0 items-center justify-between p-2 bg-[#191e24] rounded cursor-pointer hover:bg-gray-700 transition-colors duration-200"
             >
               <div
                 className="flex items-center gap-2 flex-1"

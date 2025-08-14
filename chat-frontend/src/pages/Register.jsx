@@ -48,13 +48,13 @@ const RegisterPage = () => {
             />
           </div>
           <div className="card-body max-w-md w-full">
-            <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
+            <h2 className="text-2xl font-bold text-center mb-4 text-black">Register</h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <input
                 name="name"
                 type="text"
                 placeholder="Name"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full placeholder-dark-gray"
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -63,7 +63,7 @@ const RegisterPage = () => {
                 name="username"
                 type="text"
                 placeholder="Username"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full placeholder-dark-gray"
                 value={formData.username}
                 onChange={handleChange}
                 required
@@ -72,7 +72,7 @@ const RegisterPage = () => {
                 name="email"
                 type="email"
                 placeholder="Email"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full placeholder-dark-gray"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -81,7 +81,7 @@ const RegisterPage = () => {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full placeholder-dark-gray"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -89,7 +89,7 @@ const RegisterPage = () => {
               <button type="submit" className="btn btn-primary w-full" disabled={loading}>
                 {loading ? <span className="loading loading-spinner"></span> : "Register"}
               </button>
-              <p className="text-center text-sm mt-2">
+              <p className="text-center text-sm mt-2 text-gray-800">
                 Already have an account?{" "}
                 <Link to="/login" className="text-blue-500 underline">
                   Login

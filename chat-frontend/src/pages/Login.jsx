@@ -47,13 +47,13 @@ const Login = () => {
             />
           </div>
           <div className="card-body max-w-md w-full flex flex-col items-center justify-center">
-            <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+            <h2 className="text-2xl font-bold text-center mb-4 text-black">Login</h2>
             <form className="space-y-4 w-full" onSubmit={handleSubmit}>
               <input
                 name="emailOrUsername"
                 type="text"
                 placeholder="Email or Username"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full placeholder-dark-gray"
                 value={formData.emailOrUsername}
                 onChange={handleChange}
                 required
@@ -62,7 +62,7 @@ const Login = () => {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full placeholder-dark-gray"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -70,7 +70,7 @@ const Login = () => {
               <button type="submit" className="btn btn-primary w-full" disabled={loading}>
                 {loading ? <span className="loading loading-spinner"></span> : "Login"}
               </button>
-              <p className="text-center text-sm mt-2">
+              <p className="text-center text-sm mt-2 text-gray-800">
                 Don’t have an account?{" "}
                 <Link to="/register" className="text-blue-500 underline">
                   Register
