@@ -105,7 +105,7 @@ const FriendSidebar = () => {
   const displayedUsers = search ? searchResults : incomingRequests.map((req) => req.from);
 
   return (
-    <div className="w-1/3 max-w-sm border-r border-white bg-[#1d232a] flex flex-col h-full">
+    <div className="w-full md:w-1/3 md:max-w-sm border-r border-white bg-[#1d232a] flex flex-col h-full">
       <div className="p-4">
         <input
           type="text"
@@ -122,7 +122,7 @@ const FriendSidebar = () => {
           return (
             <div
               key={user._id}
-              className="flex flex-col gap-2 md:flex-row md:gap-0 items-center justify-between p-2 bg-[#191e24] rounded cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+              className="flex items-center justify-between p-2 bg-[#191e24] rounded cursor-pointer hover:bg-gray-700 transition-colors duration-200"
             >
               <div
                 className="flex items-center gap-2 flex-1"

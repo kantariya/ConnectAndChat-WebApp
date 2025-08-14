@@ -342,6 +342,13 @@ const ChatWindow = () => {
 
                   {/* Message bubble */}
                   <div
+                    onClick={(e) => {
+                      // Prevent the click from propagating if another element is clicked inside
+                      e.stopPropagation();
+                      // Toggle the options for this message
+                      setShowActionsFor(prev => (prev === msg._id ? null : msg._id));
+                      setShowReactionPickerFor(null); // Hide reactions when showing the main menu
+                    }}
                     className={`chat-bubble relative ${isSelf ? "bg-[#605dff] text-white" : "bg-gray-700 text-white"
                       } ${msg.replyTo ? "rounded-t-none" : ""
                       } inline-block max-w-sm sm:max-w-md lg:max-w-lg`}
@@ -382,8 +389,17 @@ const ChatWindow = () => {
 
                     {/* Action buttons on hover */}
                     <div
-                      className={`absolute ${isSelf ? "-left-20" : "-right-20"
-                        } top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex space-x-1`}
+                      className={`
+                          absolute
+                          ${isSelf ? "-left-20" : "-right-20"}
+                          top-0 p-1
+                          transition-opacity
+                          duration-300
+                          flex
+                          space-x-1
+                          lg:group-hover:opacity-100
+                          ${showActionsFor === msg._id || showReactionPickerFor === msg._id ? "opacity-100" : "opacity-0"}
+                        `}
                     >
                       <div className="relative">
                         <button
@@ -426,7 +442,7 @@ const ChatWindow = () => {
                             setShowReactionPickerFor(null);
                           }}
                         >
-                          <MoreVertical size={16} className="text-white" />
+                          <MoreVertical size={16} className="text-white hidden md:block" />
                         </button>
                       </div>
                     </div>
