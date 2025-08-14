@@ -56,43 +56,43 @@ const SettingsPage = () => {
       navigate("/login");
     } catch (err) {
       setError("Failed to delete account.");
-      console.log("account delete error",err);
+      console.log("account delete error", err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-base-100 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4">Settings</h2>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-[#1d232a] rounded shadow-md text-[#d5d5d5] border border-gray-700">
+      <h2 className="text-xl font-semibold mb-4 text-[#ffffff]">Settings</h2>
 
       {/* Change Password */}
       <form onSubmit={handleChangePassword} className="space-y-3">
-        <h3 className="font-medium">Change Password</h3>
+        <h3 className="font-medium text-white">Change Password</h3>
         <input
           type="password"
           placeholder="Current Password"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-[#ffffff] placeholder-gray-500"
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
         />
         <input
           type="password"
           placeholder="New Password"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-[#ffffff] placeholder-gray-500"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
         <input
           type="password"
           placeholder="Confirm New Password"
-          className="input input-bordered w-full"
+          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-[#ffffff] placeholder-gray-500"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
         <button
           type="submit"
-          className="btn btn-primary w-full"
+          className="btn w-full bg-[#605dff] text-white hover:bg-[#504bf1] border-none"
           disabled={loading}
         >
           Change Password
@@ -101,10 +101,10 @@ const SettingsPage = () => {
 
       {/* Delete Account */}
       <div className="mt-8">
-        <h3 className="font-medium text-red-600 mb-2">Danger Zone</h3>
+        <h3 className="font-medium text-red-400 mb-2">Danger Zone</h3>
         <button
           onClick={handleDeleteAccount}
-          className="btn btn-error w-full"
+          className="btn w-full bg-red-600 text-white hover:bg-red-700 border-none"
           disabled={loading}
         >
           Delete Account
@@ -112,8 +112,8 @@ const SettingsPage = () => {
       </div>
 
       {/* Status */}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-      {success && <p className="mt-4 text-green-500">{success}</p>}
+      {error && <p className="mt-4 text-red-400">{error}</p>}
+      {success && <p className="mt-4 text-green-400">{success}</p>}
     </div>
   );
 };

@@ -207,14 +207,14 @@ const ChatWindow = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-base-100 border-l">
+    <div className="flex-1 flex flex-col h-full bg-[#1d232a] border-l border-[#191e24] text-[#d5d5d5]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-2">
+      <div className="flex items-center justify-between border-b border-[#191e24] px-4 py-2">
         <div className="flex items-center">
-          <img src={chatAvatar} alt="Chat" className="w-10 h-10 rounded-full" />
+          <img src={chatAvatar} alt="Chat" className="w-10 h-10 rounded-full border border-gray-600" />
           <div className="flex flex-col ml-3">
-            <h2 className="ml-3 text-xl font-semibold">{chatName}</h2>
-            <div className="text-sm text-gray-500 ml-3">
+            <h2 className="ml-3 text-xl font-semibold text-white">{chatName}</h2>
+            <div className="text-sm text-gray-400 ml-3">
               {onlineStatus[other?._id] === true
                 ? "Online"
                 : onlineStatus[other?._id]
@@ -225,7 +225,7 @@ const ChatWindow = () => {
         </div>
         <div className="flex items-center space-x-2">
           {currentTypingArray.length > 0 && (
-            <span className="text-sm italic text-gray-500">
+            <span className="text-sm italic text-gray-400">
               {selectedChat.isGroupChat
                 ? currentTypingArray
                   .map((id) => {
@@ -240,23 +240,23 @@ const ChatWindow = () => {
           )}
           <div className="relative" ref={clearButtonRef}>
             <button
-              className="btn btn-ghost btn-sm"
+              className="btn btn-ghost btn-sm text-red-400 hover:bg-gray-700"
               onClick={() => setShowClearConfirm((prev) => !prev)}
             >
               Clear Chat
             </button>
             {showClearConfirm && (
-              <div className="absolute right-0 mt-2 w-48 bg-base-100 border border-gray-300 rounded-lg shadow-lg z-50 p-3 text-sm">
+              <div className="absolute right-0 mt-2 w-48 bg-[#191e24] border border-gray-600 rounded-lg shadow-lg z-50 p-3 text-sm">
                 <p className="mb-2 text-white">Clear all messages?</p>
                 <div className="flex justify-end gap-2">
                   <button
-                    className="btn btn-sm btn-ghost"
+                    className="btn btn-sm btn-ghost text-[#d5d5d5] hover:bg-gray-700"
                     onClick={() => setShowClearConfirm(false)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="btn btn-sm btn-error"
+                    className="btn btn-sm bg-red-600 text-white hover:bg-red-700 border-none"
                     onClick={() => {
                       clearChat(chatId);
                       setShowClearConfirm(false);
@@ -324,14 +324,14 @@ const ChatWindow = () => {
                     className="w-8 h-8 rounded-full"
                   />
                 </div>
-                <div className="chat-content flex flex-col relative group transition-all duration-1000">
+                <div className="chat-content flex flex-col relative group transition-all duration-300">
                   {/* Pinned Reply Message Display */}
                   {msg.replyTo && (
                     <div
-                      className={`p-2 rounded-t-xl ${isSelf ? "bg-base-300" : "bg-base-200"
-                        } border-l-4 border-blue-500 text-sm italic`}
+                      className={`p-2 rounded-t-xl ${isSelf ? "bg-[#191e24]" : "bg-gray-700"
+                        } border-l-4 border-[#605dff] text-sm italic`}
                     >
-                      <p className="font-semibold text-blue-400">
+                      <p className="font-semibold text-[#605dff]">
                         Replying to {msg.replyTo.sender.name}
                       </p>
                       <p className="text-gray-400 truncate">
@@ -342,7 +342,8 @@ const ChatWindow = () => {
 
                   {/* Message bubble */}
                   <div
-                    className={`chat-bubble relative ${msg.replyTo ? "rounded-t-none" : ""
+                    className={`chat-bubble relative ${isSelf ? "bg-[#605dff] text-white" : "bg-gray-700 text-white"
+                      } ${msg.replyTo ? "rounded-t-none" : ""
                       } inline-block max-w-sm sm:max-w-md lg:max-w-lg`}
                   >
                     <div className="flex flex-col gap-1">
@@ -351,7 +352,7 @@ const ChatWindow = () => {
                         {editingMsgId === msg._id ? (
                           <input
                             type="text"
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full bg-[#191e24] border-gray-600 text-white"
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                           />
@@ -368,7 +369,7 @@ const ChatWindow = () => {
                         className={`chat-footer text-xs flex ${isSelf ? "justify-end" : "justify-start"
                           } items-center space-x-1 mt-1`}
                       >
-                        <time className="text-gray-500">
+                        <time className="text-gray-400">
                           {new Date(msg.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -382,11 +383,11 @@ const ChatWindow = () => {
                     {/* Action buttons on hover */}
                     <div
                       className={`absolute ${isSelf ? "-left-20" : "-right-20"
-                        } top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 flex space-x-1`}
+                        } top-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex space-x-1`}
                     >
                       <div className="relative">
                         <button
-                          className="p-1 hover:bg-gray-700 rounded tooltip"
+                          className="p-1 hover:bg-gray-700 rounded tooltip tooltip-primary"
                           data-tip="Reply"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -395,12 +396,12 @@ const ChatWindow = () => {
                             setShowReactionPickerFor(null);
                           }}
                         >
-                          <MessageCircleReply size={16} />
+                          <MessageCircleReply size={16} className="text-white" />
                         </button>
                       </div>
                       <div className="relative">
                         <button
-                          className="p-1 hover:bg-gray-700 rounded tooltip"
+                          className="p-1 hover:bg-gray-700 rounded tooltip tooltip-primary"
                           data-tip="React"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -410,12 +411,12 @@ const ChatWindow = () => {
                             setShowActionsFor(null);
                           }}
                         >
-                          <Smile size={16} />
+                          <Smile size={16} className="text-white" />
                         </button>
                       </div>
                       <div className="relative">
                         <button
-                          className="p-1 hover:bg-gray-700 rounded tooltip"
+                          className="p-1 hover:bg-gray-700 rounded tooltip tooltip-primary"
                           data-tip="More"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -425,7 +426,7 @@ const ChatWindow = () => {
                             setShowReactionPickerFor(null);
                           }}
                         >
-                          <MoreVertical size={16} />
+                          <MoreVertical size={16} className="text-white" />
                         </button>
                       </div>
                     </div>
@@ -433,7 +434,7 @@ const ChatWindow = () => {
                     {/* Three-dot dropdown */}
                     {showActionsFor === msg._id && (
                       <div
-                        className={`absolute w-40 bg-base-200 rounded shadow-md z-50 text-sm text-gray-300 ${isSelf ? "right-0" : "left-0"
+                        className={`absolute w-40 bg-[#191e24] rounded shadow-md z-50 text-sm text-[#d5d5d5] border border-gray-600 ${isSelf ? "right-0" : "left-0"
                           } ${isBottomMessage ? "bottom-full mb-2" : "top-full mt-2"}`}
                         ref={containerRef}
                       >
@@ -447,7 +448,7 @@ const ChatWindow = () => {
                                 setShowActionsFor(null);
                               }}
                             >
-                              <Edit2 size={16} className="mr-2" />
+                              <Edit2 size={16} className="mr-2 text-[#605dff]" />
                               Edit
                             </li>
                           )}
@@ -482,7 +483,7 @@ const ChatWindow = () => {
                     {/* Reaction picker popup */}
                     {showReactionPickerFor === msg._id && (
                       <div
-                        className={`absolute z-50 bg-base-200 rounded shadow-md p-2 ${isSelf ? "right-0" : "left-0"
+                        className={`absolute z-50 bg-[#191e24] rounded shadow-md p-2 border border-gray-600 ${isSelf ? "right-0" : "left-0"
                           } ${isBottomMessage ? "bottom-full mb-2" : "top-full mt-2"}`}
                         ref={pickerRef}
                       >
@@ -507,7 +508,7 @@ const ChatWindow = () => {
                     {/* Reactions display */}
                     {msg.reactions && msg.reactions.length > 0 && (
                       <div
-                        className={`absolute -bottom-2 flex items-center gap-1 bg-base-300 rounded-full px-1 py-0.5 text-xs border border-gray-600 shadow ${isSelf ? "left-0 transform -translate-x-1/2" : "right-0 transform translate-x-1/2"}`}
+                        className={`absolute -bottom-2 flex items-center gap-1 bg-[#1d232a] rounded-full px-1 py-0.5 text-xs border border-gray-600 shadow ${isSelf ? "left-0 transform -translate-x-1/2" : "right-0 transform translate-x-1/2"}`}
                       >
                         {Object.entries(reactionsCount).map(([emoji, count]) => (
                           <span key={emoji} className="flex items-center gap-0.5">
@@ -526,12 +527,12 @@ const ChatWindow = () => {
       </div>
 
       {/* Message input area */}
-      <div className="p-4 border-t border-gray-700 flex flex-col">
+      <div className="p-4 border-t border-[#191e24] flex flex-col">
         {/* Pinned reply message display */}
         {replyToMessage && (
-          <div className="p-2 -mt-4 bg-base-200 border-l-4 border-blue-500 rounded-t-lg flex items-center justify-between">
+          <div className="p-2 -mt-4 bg-[#191e24] border-l-4 border-[#605dff] rounded-t-lg flex items-center justify-between">
             <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-semibold text-blue-400">
+              <p className="text-sm font-semibold text-[#605dff]">
                 Replying to {replyToMessage.sender.name}
               </p>
               <p className="text-sm text-gray-400 truncate">
@@ -550,7 +551,7 @@ const ChatWindow = () => {
         <form className="flex gap-2" onSubmit={handleSubmit}>
           <input
             type="text"
-            className={`input input-bordered w-full ${replyToMessage ? "rounded-t-none" : ""
+            className={`input input-bordered w-full bg-[#191e24] border-gray-600 text-white placeholder-gray-500 ${replyToMessage ? "rounded-t-none" : ""
               }`}
             autoComplete="off"
             name="chatMessage"
@@ -564,13 +565,13 @@ const ChatWindow = () => {
               }
             }}
           />
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn bg-[#605dff] text-white hover:bg-[#504bf1] border-none">
             <Send className="w-5 h-5" />
           </button>
           {editingMsgId && (
             <button
               type="button"
-              className="btn btn-ghost"
+              className="btn btn-ghost text-[#d5d5d5] hover:bg-gray-700"
               onClick={() => {
                 setEditingMsgId(null);
                 setEditContent("");

@@ -43,18 +43,18 @@ const ChatListSidebar = () => {
   };
 
   return (
-    <div className="w-1/3 max-w-sm border-r bg-base-200 flex flex-col h-full">
+    <div className="w-1/3 max-w-sm border-r border-[#191e24] bg-[#1d232a] flex flex-col h-full">
       <div className="p-4">
         <input
           type="text"
           placeholder="Search chats"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="input input-bordered w-full"
+          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-white placeholder-gray-500"
         />
       </div>
       <div className="flex-1 overflow-y-auto">
-        {loadingChats && <div className="p-4 text-center">Loading chats...</div>}
+        {loadingChats && <div className="p-4 text-center text-gray-500">Loading chats...</div>}
 
         {!loadingChats && filteredChats.map(chat => {
           const isSelected = selectedChat?._id === chat._id;
@@ -67,21 +67,22 @@ const ChatListSidebar = () => {
           return (
             <div
               key={chat._id}
-              className={`flex items-center p-2 cursor-pointer hover:bg-base-300 ${isSelected ? "bg-base-300" : ""}`}
+              className={`flex items-center p-2 cursor-pointer transition-colors duration-200 
+            hover:bg-[#191e24] ${isSelected ? "bg-[#191e24] border-l-4 border-[#605dff]" : ""}`}
               onClick={() => selectChat(chat)}
             >
               <img src={avatarUrl} alt="avatar" className="w-10 h-10 rounded-full" />
-              <div className="ml-3 flex-1">
-                <div className="font-medium">{renderChatName(chat)}</div>
-                <div className="flex flex justify-between">
+              <div className="ml-3 flex-1 text-[#d5d5d5]">
+                <div className="font-medium text-white">{renderChatName(chat)}</div>
+                <div className="flex justify-between">
                   {safeLatest && (
-                    <div className="text-sm text-gray-500 truncate">
+                    <div className="text-sm text-gray-400 truncate">
                       {safeLatest.sender.name}: {safeLatest.content.slice(0, 30)}
                       {safeLatest.content.length > 30 ? "..." : ""}
                     </div>
                   )}
                   {chat.unreadCount > 0 && (
-                    <span className="badge badge-sm badge-primary ml-2">
+                    <span className="badge badge-sm bg-[#605dff] text-white border-none ml-2">
                       {chat.unreadCount}
                     </span>
                   )}
@@ -94,7 +95,7 @@ const ChatListSidebar = () => {
         {!loadingChats && filteredChats.length === 0 && (
           <div className="p-4 text-center text-gray-500">
             No friends found, add friends from{" "}
-            <Link to="/friends" className="text-blue-500 underline hover:text-blue-700">
+            <Link to="/friends" className="text-[#605dff] underline hover:text-[#504bf1]">
               Friends Page
             </Link>
           </div>

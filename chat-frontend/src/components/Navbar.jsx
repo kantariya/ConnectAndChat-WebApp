@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 
 const Navbar = () => {
-    
+
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -25,31 +25,32 @@ const Navbar = () => {
     const currentPath = location.pathname;
 
     return (
-        <div className="navbar bg-black shadow-sm px-4">
-            {/* The logo container now has no flex class */}
-            <div className="navbar-start">
+        <div className="navbar bg-[#1d232a] shadow-sm px-4 text-[#d5d5d5] border-b border-[#191e24]">
+            {/* The logo container is now hidden on mobile and only appears on medium screens and up */}
+            <div className="navbar-start md:block hidden">
                 <button
-                    className="btn btn-ghost text-xl text-primary"
+                    className="btn btn-ghost"
                     onClick={() => navigate("/")}
                 >
                     <img className="h-20 w-20" src="/ConnectNChatIcon.svg" alt="App Logo" />
                 </button>
             </div>
-            {/* This center div is correctly positioned */}
+
+            {/* The center tabs are now balanced across all screen sizes */}
             <div className="tabs tabs-boxed navbar-center gap-0.5">
                 <input
                     type="radio"
                     name="my_tabs"
-                    id="tab-dashboard"
-                    className="hidden peer/tab-dashboard"
+                    id="tab-friends"
+                    className="hidden peer/tab-friends"
                     checked={currentPath === "/friends"}
                     onChange={() => navigate("/friends")}
                 />
                 <label
-                    htmlFor="tab-dashboard"
-                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500
-                   peer-checked/tab-dashboard:border-2 peer-checked/tab-dashboard:border-white
-                   peer-checked/tab-dashboard:text-white peer-checked/tab-dashboard:bg-base-100"
+                    htmlFor="tab-friends"
+                    className="tab rounded-full px-6 py-2 border border-gray-600 text-gray-500
+                   peer-checked/tab-friends:border-2 peer-checked/tab-friends:border-[#605dff]
+                   peer-checked/tab-friends:text-[#605dff] peer-checked/tab-friends:bg-[#191e24]"
                 >
                     <UsersRound />
                 </label>
@@ -57,16 +58,16 @@ const Navbar = () => {
                 <input
                     type="radio"
                     name="my_tabs"
-                    id="tab-friends"
-                    className="hidden peer/tab-friends"
+                    id="tab-chats"
+                    className="hidden peer/tab-chats"
                     checked={currentPath === "/"}
                     onChange={() => navigate("")}
                 />
                 <label
-                    htmlFor="tab-friends"
-                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500
-                   peer-checked/tab-friends:border-2 peer-checked/tab-friends:border-white
-                   peer-checked/tab-friends:text-white peer-checked/tab-friends:bg-base-100"
+                    htmlFor="tab-chats"
+                    className="tab rounded-full px-6 py-2 border border-gray-600 text-gray-500
+                   peer-checked/tab-chats:border-2 peer-checked/tab-chats:border-[#605dff]
+                   peer-checked/tab-chats:text-[#605dff] peer-checked/tab-chats:bg-[#191e24]"
                 >
                     <MessagesSquare />
                 </label>
@@ -81,25 +82,26 @@ const Navbar = () => {
                 />
                 <label
                     htmlFor="tab-chatbot"
-                    className="tab rounded-full px-6 py-2 border border-gray-300 text-gray-500
-                   peer-checked/tab-chatbot:border-2 peer-checked/tab-chatbot:border-white
-                   peer-checked/tab-chatbot:text-white peer-checked/tab-chatbot:bg-base-100"
+                    className="tab rounded-full px-6 py-2 border border-gray-600 text-gray-500
+                   peer-checked/tab-chatbot:border-2 peer-checked/tab-chatbot:border-[#605dff]
+                   peer-checked/tab-chatbot:text-[#605dff] peer-checked/tab-chatbot:bg-[#191e24]"
                 >
                     <BotMessageSquare />
                 </label>
             </div>
-            {/* This end div is now balanced by the start div */}
+
+            {/* The end div is now balanced by the start div */}
             <div className="flex gap-2 navbar-end">
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                        <div className="w-10 rounded-full">
+                        <div className="w-10 rounded-full border border-gray-600">
                             <img src={user?.profilePic || defaultAvatar} alt="Avatar" />
                         </div>
                     </div>
-                    <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 w-52 p-2 shadow">
-                        <li><button onClick={() => navigate("/profile")}>Profile</button></li>
-                        <li><button onClick={() => navigate("/settings")}>Settings</button></li>
-                        <li><button onClick={handleLogout}>Logout</button></li>
+                    <ul tabIndex={0} className="menu menu-sm dropdown-content bg-[#191e24] rounded-box mt-3 w-52 p-2 shadow border border-gray-600">
+                        <li><button className="text-[#d5d5d5] hover:bg-gray-700" onClick={() => navigate("/profile")}>Profile</button></li>
+                        <li><button className="text-[#d5d5d5] hover:bg-gray-700" onClick={() => navigate("/settings")}>Settings</button></li>
+                        <li><button className="text-red-400 hover:bg-gray-700" onClick={handleLogout}>Logout</button></li>
                     </ul>
                 </div>
             </div>

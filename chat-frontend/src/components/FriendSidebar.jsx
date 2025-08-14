@@ -105,14 +105,14 @@ const FriendSidebar = () => {
   const displayedUsers = search ? searchResults : incomingRequests.map((req) => req.from);
 
   return (
-    <div className="w-1/3 max-w-sm border-r bg-base-200 flex flex-col h-full">
+    <div className="w-1/3 max-w-sm border-r border-[#191e24] bg-[#1d232a] flex flex-col h-full">
       <div className="p-4">
         <input
           type="text"
           placeholder="Search users to add friend"
           value={search}
           onChange={handleSearchChange}
-          className="input input-bordered w-full"
+          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-[#ffffff] placeholder-gray-500"
         />
       </div>
       <div className="flex-1 overflow-y-auto px-4 space-y-3">
@@ -122,7 +122,7 @@ const FriendSidebar = () => {
           return (
             <div
               key={user._id}
-              className="flex items-center justify-between p-2 bg-base-100 rounded cursor-pointer hover:bg-base-300"
+              className="flex items-center justify-between p-2 bg-[#191e24] rounded cursor-pointer hover:bg-gray-700 transition-colors duration-200"
             >
               <div
                 className="flex items-center gap-2 flex-1"
@@ -134,14 +134,14 @@ const FriendSidebar = () => {
                   className="w-10 h-10 rounded-full"
                 />
                 <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-gray-500">@{user.username}</p>
+                  <p className="font-medium text-[#ffffff]">{user.name}</p>
+                  <p className="text-sm text-gray-400">@{user.username}</p>
                 </div>
               </div>
               <div>
                 <button
-                  className={`btn btn-xs ${buttonType === "remove" ? "btn-error" : "btn-primary"
-                    }`}
+                  className={`btn btn-xs ${buttonType === "remove" ? "bg-red-600 hover:bg-red-700" : "bg-[#605dff] hover:bg-[#504bf1]"
+                    } text-white border-none`}
                   disabled={isLoading}
                   onClick={() => handleAction(buttonType, user._id)}
                 >

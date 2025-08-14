@@ -102,43 +102,43 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <h1 className="text-2xl font-semibold mb-4">My Profile</h1>
+    <div className="flex flex-col items-center p-4 min-h-screen bg-[#1d232a] text-[#d5d5d5]">
+      <h1 className="text-2xl font-semibold mb-4 text-white">My Profile</h1>
 
       {/* Profile Picture */}
       <div className="relative">
         <img
           src={previewPic || user?.profilePic || defaultAvatar}
           alt="Profile"
-          className="w-32 h-32 rounded-full object-cover border"
+          className="w-32 h-32 rounded-full object-cover border-2 border-[#191e24]"
         />
         <div className="absolute bottom-0 right-0" ref={dropdownRef}>
           <button
-            className="bg-white p-1 rounded-full shadow hover:bg-gray-100"
+            className="bg-[#191e24] p-1 rounded-full shadow hover:bg-gray-700"
             onClick={() => setDropdownOpen((prev) => !prev)}
             title="Profile photo options"
           >
-            <Camera size={20} className="text-gray-700" />
+            <Camera size={20} className="text-[#605dff]" />
           </button>
           {dropdownOpen && (
-            <div className="absolute bottom-10 right-0 bg-white border rounded shadow z-10 w-70">
+            <div className="absolute bottom-10 right-0 bg-[#191e24] border border-[#605dff] rounded shadow z-10 w-70">
               <button
                 onClick={() => {
                   fileInputRef.current?.click();
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-black hover:bg-gray-100 flex items-center"
+                className="w-full text-left px-4 py-2 text-[#d5d5d5] hover:bg-gray-700 flex items-center"
               >
-                <UploadCloud size={16} className="mr-2" />
+                <UploadCloud size={16} className="mr-2 text-[#605dff]" />
                 Change Profile Picture
-                <p className="text-red-500 text-s ml-1">(Max 1MB)</p>
+                <p className="text-red-400 text-s ml-1">(Max 1MB)</p>
               </button>
               {user?.profilePic && (
                 <button
                   onClick={handleRemoveProfilePic}
-                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center"
+                  className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-700 flex items-center"
                 >
-                  <Trash2 size={16} className="mr-2" />
+                  <Trash2 size={16} className="mr-2 text-red-400" />
                   Remove Profile Picture
                 </button>
               )}
@@ -160,7 +160,7 @@ const ProfilePage = () => {
           <button
             disabled={loading}
             onClick={handlePicUpload}
-            className="btn btn-sm btn-primary flex items-center"
+            className="btn btn-sm bg-[#605dff] text-white hover:bg-[#504bf1] flex items-center"
           >
             <Check size={16} className="mr-1" /> Save
           </button>
@@ -170,7 +170,7 @@ const ProfilePage = () => {
               setSelectedFile(null);
               setPreviewPic(null);
             }}
-            className="btn btn-sm btn-ghost flex items-center"
+            className="btn btn-sm btn-ghost text-[#d5d5d5] hover:bg-gray-700 flex items-center"
           >
             <X size={16} className="mr-1" /> Cancel
           </button>
@@ -179,29 +179,29 @@ const ProfilePage = () => {
 
       {/* Read-only Fields */}
       <div className="mt-6 w-full max-w-md">
-        <label className="block text-gray-700">Username</label>
+        <label className="block text-[#d5d5d5]">Username</label>
         <input
           type="text"
           value={user?.username || ''}
           disabled
-          className="input input-bordered w-full mb-4 bg-gray-100 cursor-not-allowed"
+          className="input input-bordered w-full mb-4 bg-[#191e24] border-gray-600 text-white cursor-not-allowed"
         />
 
-        <label className="block text-gray-700">Email</label>
+        <label className="block text-[#d5d5d5]">Email</label>
         <input
           type="email"
           value={user?.email || ''}
           disabled
-          className="input input-bordered w-full mb-4 bg-gray-100 cursor-not-allowed"
+          className="input input-bordered w-full mb-4 bg-[#191e24] border-gray-600 text-white cursor-not-allowed"
         />
 
         {/* Name Editable */}
-        <label className="block text-gray-700 flex items-center justify-between">
+        <label className="block text-[#d5d5d5] flex items-center justify-between">
           Name
           {!editingName && (
             <button
               onClick={() => setEditingName(true)}
-              className="btn btn-ghost btn-xs"
+              className="btn btn-ghost btn-xs text-[#605dff]"
               title="Edit name"
             >
               <Edit2 size={16} />
@@ -214,12 +214,12 @@ const ProfilePage = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="input input-bordered flex-1"
+              className="input input-bordered flex-1 bg-[#191e24] border-gray-600 text-white"
             />
             <button
               disabled={loading}
               onClick={handleNameSave}
-              className="btn btn-primary btn-sm flex items-center"
+              className="btn btn-primary btn-sm flex items-center bg-[#605dff] text-white hover:bg-[#504bf1]"
             >
               <Check size={16} className="mr-1" /> Save
             </button>
@@ -229,7 +229,7 @@ const ProfilePage = () => {
                 setEditingName(false);
                 setName(user.name || '');
               }}
-              className="btn btn-ghost btn-sm flex items-center"
+              className="btn btn-ghost btn-sm text-[#d5d5d5] hover:bg-gray-700 flex items-center"
             >
               <X size={16} className="mr-1" /> Cancel
             </button>
@@ -239,11 +239,11 @@ const ProfilePage = () => {
             type="text"
             value={user?.name || ''}
             disabled
-            className="input input-bordered w-full mb-4 bg-gray-100 cursor-not-allowed"
+            className="input input-bordered w-full mb-4 bg-[#191e24] border-gray-600 text-white cursor-not-allowed"
           />
         )}
       </div>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-red-400 mt-2">{error}</p>}
     </div>
   );
 };
