@@ -207,11 +207,11 @@ const ChatWindow = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#1d232a] border-l border-[#191e24] text-[#d5d5d5]">
+    <div className="flex-1 flex flex-col h-full bg-[#1d232a] border-l border-white text-[#d5d5d5]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#191e24] px-4 py-2">
+      <div className="flex items-center justify-between border-b border-white px-4 py-2">
         <div className="flex items-center">
-          <img src={chatAvatar} alt="Chat" className="w-10 h-10 rounded-full border border-gray-600" />
+          <img src={chatAvatar} alt="Chat" className="w-10 h-10 rounded-full border border-white" />
           <div className="flex flex-col ml-3">
             <h2 className="ml-3 text-xl font-semibold text-white">{chatName}</h2>
             <div className="text-sm text-gray-400 ml-3">
@@ -246,7 +246,7 @@ const ChatWindow = () => {
               Clear Chat
             </button>
             {showClearConfirm && (
-              <div className="absolute right-0 mt-2 w-48 bg-[#191e24] border border-gray-600 rounded-lg shadow-lg z-50 p-3 text-sm">
+              <div className="absolute right-0 mt-2 w-48 bg-[#191e24] border border-white rounded-lg shadow-lg z-50 p-3 text-sm">
                 <p className="mb-2 text-white">Clear all messages?</p>
                 <div className="flex justify-end gap-2">
                   <button
@@ -352,7 +352,7 @@ const ChatWindow = () => {
                         {editingMsgId === msg._id ? (
                           <input
                             type="text"
-                            className="input input-bordered w-full bg-[#191e24] border-gray-600 text-white"
+                            className="input input-bordered w-full bg-[#191e24] border-white text-white"
                             value={editContent}
                             onChange={(e) => setEditContent(e.target.value)}
                           />
@@ -434,7 +434,7 @@ const ChatWindow = () => {
                     {/* Three-dot dropdown */}
                     {showActionsFor === msg._id && (
                       <div
-                        className={`absolute w-40 bg-[#191e24] rounded shadow-md z-50 text-sm text-[#d5d5d5] border border-gray-600 ${isSelf ? "right-0" : "left-0"
+                        className={`absolute w-40 bg-[#191e24] rounded shadow-md z-50 text-sm text-[#d5d5d5] border border-white ${isSelf ? "right-0" : "left-0"
                           } ${isBottomMessage ? "bottom-full mb-2" : "top-full mt-2"}`}
                         ref={containerRef}
                       >
@@ -483,7 +483,7 @@ const ChatWindow = () => {
                     {/* Reaction picker popup */}
                     {showReactionPickerFor === msg._id && (
                       <div
-                        className={`absolute z-50 bg-[#191e24] rounded shadow-md p-2 border border-gray-600 ${isSelf ? "right-0" : "left-0"
+                        className={`absolute z-50 bg-[#191e24] rounded shadow-md p-2 border border-white ${isSelf ? "right-0" : "left-0"
                           } ${isBottomMessage ? "bottom-full mb-2" : "top-full mt-2"}`}
                         ref={pickerRef}
                       >
@@ -508,7 +508,7 @@ const ChatWindow = () => {
                     {/* Reactions display */}
                     {msg.reactions && msg.reactions.length > 0 && (
                       <div
-                        className={`absolute -bottom-2 flex items-center gap-1 bg-[#1d232a] rounded-full px-1 py-0.5 text-xs border border-gray-600 shadow ${isSelf ? "left-0 transform -translate-x-1/2" : "right-0 transform translate-x-1/2"}`}
+                        className={`absolute -bottom-2 flex items-center gap-1 bg-[#1d232a] rounded-full px-1 py-0.5 text-xs border border-white shadow ${isSelf ? "left-0 transform -translate-x-1/2" : "right-0 transform translate-x-1/2"}`}
                       >
                         {Object.entries(reactionsCount).map(([emoji, count]) => (
                           <span key={emoji} className="flex items-center gap-0.5">
@@ -527,7 +527,7 @@ const ChatWindow = () => {
       </div>
 
       {/* Message input area */}
-      <div className="p-4 border-t border-[#191e24] flex flex-col">
+      <div className="p-4 border-t border-white flex flex-col">
         {/* Pinned reply message display */}
         {replyToMessage && (
           <div className="p-2 -mt-4 bg-[#191e24] border-l-4 border-[#605dff] rounded-t-lg flex items-center justify-between">
@@ -551,7 +551,7 @@ const ChatWindow = () => {
         <form className="flex gap-2" onSubmit={handleSubmit}>
           <input
             type="text"
-            className={`input input-bordered w-full bg-[#191e24] border-gray-600 text-white placeholder-gray-500 ${replyToMessage ? "rounded-t-none" : ""
+            className={`input input-bordered w-full bg-[#191e24] border-white text-white placeholder-gray-500 ${replyToMessage ? "rounded-t-none" : ""
               }`}
             autoComplete="off"
             name="chatMessage"

@@ -105,14 +105,14 @@ const FriendSidebar = () => {
   const displayedUsers = search ? searchResults : incomingRequests.map((req) => req.from);
 
   return (
-    <div className="w-1/3 max-w-sm border-r border-[#191e24] bg-[#1d232a] flex flex-col h-full">
+    <div className="w-1/3 max-w-sm border-r border-white bg-[#1d232a] flex flex-col h-full">
       <div className="p-4">
         <input
           type="text"
           placeholder="Search users to add friend"
           value={search}
           onChange={handleSearchChange}
-          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-[#ffffff] placeholder-gray-500"
+          className="input input-bordered w-full bg-[#191e24] border-white text-[#ffffff] placeholder-gray-500"
         />
       </div>
       <div className="flex-1 overflow-y-auto px-4 space-y-3">

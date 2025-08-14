@@ -17,7 +17,7 @@ const AuthLayout = () => {
   }
 
   return !user ? (
-    <div className="min-h-screen bg-base-200 text-base-content">
+    <div className="min-h-screen bg-[#1d232a] text-[#d5d5d5]">
       <div className="max-w-full mx-auto p-4">
         <Outlet />
       </div>

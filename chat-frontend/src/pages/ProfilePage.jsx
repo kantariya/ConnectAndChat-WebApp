@@ -110,7 +110,7 @@ const ProfilePage = () => {
         <img
           src={previewPic || user?.profilePic || defaultAvatar}
           alt="Profile"
-          className="w-32 h-32 rounded-full object-cover border-2 border-[#191e24]"
+          className="w-32 h-32 rounded-full object-cover border-2 border-white"
         />
         <div className="absolute bottom-0 right-0" ref={dropdownRef}>
           <button
@@ -121,13 +121,13 @@ const ProfilePage = () => {
             <Camera size={20} className="text-[#605dff]" />
           </button>
           {dropdownOpen && (
-            <div className="absolute bottom-10 right-0 bg-[#191e24] border border-[#605dff] rounded shadow z-10 w-70">
+            <div className="absolute bottom-10 right-0 bg-gray-400 border border-[#605dff] rounded shadow z-10 w-70">
               <button
                 onClick={() => {
                   fileInputRef.current?.click();
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-[#d5d5d5] hover:bg-gray-700 flex items-center"
+                className="w-full text-left px-4 py-2 text-black hover:bg-gray-700 flex items-center"
               >
                 <UploadCloud size={16} className="mr-2 text-[#605dff]" />
                 Change Profile Picture
@@ -184,7 +184,7 @@ const ProfilePage = () => {
           type="text"
           value={user?.username || ''}
           disabled
-          className="input input-bordered w-full mb-4 bg-[#191e24] border-gray-600 text-white cursor-not-allowed"
+          className="input input-bordered w-full mb-4 bg-[#191e24] border-white text-white cursor-not-allowed"
         />
 
         <label className="block text-[#d5d5d5]">Email</label>
@@ -192,7 +192,7 @@ const ProfilePage = () => {
           type="email"
           value={user?.email || ''}
           disabled
-          className="input input-bordered w-full mb-4 bg-[#191e24] border-gray-600 text-white cursor-not-allowed"
+          className="input input-bordered w-full mb-4 bg-[#191e24] border-white text-white cursor-not-allowed"
         />
 
         {/* Name Editable */}
@@ -214,7 +214,7 @@ const ProfilePage = () => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="input input-bordered flex-1 bg-[#191e24] border-gray-600 text-white"
+              className="input input-bordered flex-1 bg-[#191e24] border-white text-white"
             />
             <button
               disabled={loading}
@@ -239,7 +239,7 @@ const ProfilePage = () => {
             type="text"
             value={user?.name || ''}
             disabled
-            className="input input-bordered w-full mb-4 bg-[#191e24] border-gray-600 text-white cursor-not-allowed"
+            className="input input-bordered w-full mb-4 bg-[#191e24] border-white text-white cursor-not-allowed"
           />
         )}
       </div>

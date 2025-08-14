@@ -43,14 +43,14 @@ const ChatListSidebar = () => {
   };
 
   return (
-    <div className="w-1/3 max-w-sm border-r border-[#191e24] bg-[#1d232a] flex flex-col h-full">
+    <div className="w-1/3 max-w-sm border-r border-white bg-[#1d232a] flex flex-col h-full">
       <div className="p-4">
         <input
           type="text"
           placeholder="Search chats"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="input input-bordered w-full bg-[#191e24] border-gray-600 text-white placeholder-gray-500"
+          className="input input-bordered w-full bg-[#191e24] border-white text-white placeholder-gray-500"
         />
       </div>
       <div className="flex-1 overflow-y-auto">

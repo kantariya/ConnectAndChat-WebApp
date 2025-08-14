@@ -68,14 +68,14 @@ export default function ChatBotPage() {
   return (
     <div className="flex flex-col h-full bg-gray-900 text-gray-100">
       {/* Header */}
-      <div className="px-4 py-2 border-b border-gray-700 bg-gray-800 flex items-center space-x-3">
+      <div className="px-4 py-2 border-b border-white bg-gray-800 flex items-center space-x-3">
         <h2 className="text-lg font-semibold text-white">🤖 Character Chatbot</h2>
 
         <label className="text-sm text-gray-300 font-medium whitespace-nowrap">
           Talking to:
         </label>
         <input
-          className="input input-sm flex-1 max-w-xs bg-gray-700 text-white placeholder-gray-400 border-gray-600"
+          className="input input-sm flex-1 max-w-xs bg-gray-700 text-white placeholder-gray-400 border-white"
           value={character}
           onChange={(e) => setCharacter(e.target.value)}
           placeholder="e.g. Donald Trump, Naruto, etc."
@@ -93,7 +93,7 @@ export default function ChatBotPage() {
               {msg.from !== "You" && (
                 <img
                   src={defaultAvatar}
-                  className="w-8 h-8 rounded-full border border-gray-600"
+                  className="w-8 h-8 rounded-full border border-white"
                 />
               )}
             </div>
@@ -114,7 +114,7 @@ export default function ChatBotPage() {
       {/* Input */}
       <div className="p-4 border-t border-gray-700 bg-gray-800 flex items-center space-x-2">
         <input
-          className="input flex-1 bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+          className="input flex-1 bg-gray-700 text-white border-white placeholder-gray-400"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
