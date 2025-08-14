@@ -52,7 +52,7 @@ const Navbar = () => {
                    peer-checked/tab-friends:border-2 peer-checked/tab-friends:border-[#605dff]
                    peer-checked/tab-friends:text-[#605dff] peer-checked/tab-friends:bg-[#191e24]"
                 >
-                    <UsersRound />
+                    <UsersRound color="white"/>
                 </label>
 
                 <input
@@ -69,7 +69,7 @@ const Navbar = () => {
                    peer-checked/tab-chats:border-2 peer-checked/tab-chats:border-[#605dff]
                    peer-checked/tab-chats:text-[#605dff] peer-checked/tab-chats:bg-[#191e24]"
                 >
-                    <MessagesSquare />
+                    <MessagesSquare color="white"/>
                 </label>
 
                 <input
@@ -86,7 +86,7 @@ const Navbar = () => {
                    peer-checked/tab-chatbot:border-2 peer-checked/tab-chatbot:border-[#605dff]
                    peer-checked/tab-chatbot:text-[#605dff] peer-checked/tab-chatbot:bg-[#191e24]"
                 >
-                    <BotMessageSquare />
+                    <BotMessageSquare color="white"/>
                 </label>
             </div>
 
