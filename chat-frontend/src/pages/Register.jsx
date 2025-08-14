@@ -54,7 +54,7 @@ const RegisterPage = () => {
                 name="name"
                 type="text"
                 placeholder="Name"
-                className="input input-bordered w-full placeholder-dark-gray"
+                className="input input-bordered w-full placeholder-gray-600"
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -63,7 +63,7 @@ const RegisterPage = () => {
                 name="username"
                 type="text"
                 placeholder="Username"
-                className="input input-bordered w-full placeholder-dark-gray"
+                className="input input-bordered w-full placeholder-gray-600"
                 value={formData.username}
                 onChange={handleChange}
                 required
@@ -72,7 +72,7 @@ const RegisterPage = () => {
                 name="email"
                 type="email"
                 placeholder="Email"
-                className="input input-bordered w-full placeholder-dark-gray"
+                className="input input-bordered w-full placeholder-gray-600"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -81,7 +81,7 @@ const RegisterPage = () => {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="input input-bordered w-full placeholder-dark-gray"
+                className="input input-bordered w-full placeholder-gray-600"
                 value={formData.password}
                 onChange={handleChange}
                 required
