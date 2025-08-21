@@ -1,17 +1,25 @@
 import ChatWindow from "../components/ChatWindow";
+
 import FriendSidebar from "../components/FriendSidebar";
 
+
+
 const FriendsPage = () => {
+
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)]">
-      <div>
-        <FriendSidebar className="flex-1" />
-      </div>
-      <div className="hidden md:block flex-1">
-        <ChatWindow />
-      </div>
+
+    <div className="flex h-[calc(100vh-4rem)]">
+
+      <FriendSidebar />
+
+      <ChatWindow className="hidden md:block" />
+
     </div>
+
   );
+
 };
+
+
 
 export default FriendsPage;
