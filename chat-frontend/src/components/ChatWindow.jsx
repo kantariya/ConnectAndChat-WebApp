@@ -80,7 +80,6 @@ const ChatWindow = () => {
         }
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, userMessages]);
 
   // Typing indicator emit with debounce for stopTyping

@@ -14,7 +14,7 @@ export const getBotReply = asyncHandler(async (req, res) => {
     const { userInput, character } = req.body;
     const sessionId = req.user._id + "_" + character;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
     let chat;
     if (sessions.has(sessionId)) {
